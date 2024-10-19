@@ -1,10 +1,18 @@
 import os
 import fitz
 import spacy
+import paths
 
 
-#corriger les accents
+# Charger le modèle de langue français
+nlp = spacy.load("en_core_web_lg")
+
+
+
+
 def correct_accent(text):
+    """corriger les accents"""
+    
     # Create a new list to hold the corrected characters
     corrected_text = []
     i = 0
@@ -33,43 +41,63 @@ def correct_accent(text):
     # Join the list into a string and return it
     return ''.join(corrected_text)
 
+
+
+
 #parcourir les fichiers pdf
 def get_all_files(directory):
     """Returns a list of all files in the given directory, including files in subdirectories."""
     files_list = []
 
     # Traverse the directory and its subdirectories
-    for root, dirs, files in os.walk(directory):
+    for root, _ , files in os.walk(directory):
         for file in files:
             # Create full path and append to the list
             files_list.append(os.path.join(root, file))
 
     return files_list
 
-#charger les données
-def get_data(all_files):
 
-  # Fonction pour extraire le texte d'un fichier PDF
-  def extract_text_from_pdf(pdf_path):
-    with fitz.open(pdf_path) as doc:
-        extracted_text = ''
-        for page in doc:
-            extracted_text += page.get_text() + '\n'
+def tokenize(text):
+    """pour tokenizer tous les textes présents sur le dictionnaire"""
+    max_length = 1000000  # Longueur maximale pour spaCy
+    tokens = []
+    for i in range(0, len(text), max_length):
+        doc = nlp(text[i:i + max_length])
+        tokens += [token.text.lower() for token in doc if not token.is_stop]
+    return tokens
 
-    # Ensure the text is in UTF-8 format
-    utf8_text = extracted_text.encode('utf-8')
-    return correct_accent(utf8_text.decode('utf-8'))
 
-  data = {}
-  for file in all_files:
-    text = extract_text_from_pdf(file)
-    filename = file.split('/')[-1].split('.')[0]
-    data[filename] = text
-  return data
+def preprocess_data(directory):
+    """charger les données -> fichier_pdf : text"""
+    
+    # Fonction pour extraire le texte d'un fichier PDF
+    def extract_text_from_pdf(pdf_path):
+        try:
+            with fitz.open(pdf_path) as doc:
+                extracted_text = ''
+                for page in doc:
+                    extracted_text += page.get_text() + '\n'
+        except Exception as e:
+            print(f"Erreur lors de l'ouverture du fichier {pdf_path}: {e}")
+            return ""
 
-#tokenization
-def tokenize(directory):
-    no_tokenize_data = get_data(get_all_files(directory))
-    for filename in no_tokenize_data.keys():
-        text = no_tokenize_data[filename]
+        utf8_text = extracted_text.encode('utf-8')
+        return correct_accent(utf8_text.decode('utf-8'))
 
+    all_files = get_all_files(directory)
+    data = {}
+    counter = 0
+    for file in all_files:
+        print(f"f{file}")
+        text = extract_text_from_pdf(file)
+        tokens = tokenize(text)
+        filename = file.split('/')[-1].split('.')[0]
+        data[filename] = tokens
+        counter += 1
+    return data
+
+
+dico = preprocess_data(paths.data_path)
+for file, text in dico.items():
+    print(file," : ",len(text))

@@ -78,7 +78,7 @@ def boolean_search(query, inverted_index):
 
     return result
 
-def tf_idf(query , X , inverted_index ):  # X : 56 * nb_of_term
+def tf_idf(query , X , inverted_index , bool_operator=False ):  # X : 56 * nb_of_term
     """Appretissage automatique intelligence artificielle"""
     def get_scores (matrix):
         print(f"query : {query}")
@@ -98,12 +98,15 @@ def tf_idf(query , X , inverted_index ):  # X : 56 * nb_of_term
         new_query = " AND ".join(query_tokens)
         return new_query
     
-    doc_list = boolean_search(transform_query(query) , inverted_index) # liste doc plus pertinents -> [5, 25 , 35]
-    nb_of_doc = len(doc_list)
-    if nb_of_doc == 0 : 
-        return get_scores(X)
+    if bool_operator:
+        doc_list = boolean_search(transform_query(query) , inverted_index) # liste doc plus pertinents -> [5, 25 , 35]
+        nb_of_doc = len(doc_list)
+        if nb_of_doc == 0 : 
+            return get_scores(X)
         
-    else : 
-        new_x =  X[doc_list, :]
-        return get_scores (new_x)
+        else : 
+            new_x =  X[doc_list, :]
+            return get_scores (new_x)
+    else:
+        return get_scores(X)
     

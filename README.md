@@ -40,4 +40,7 @@ On a décidé de l'installer après vu qu'il pose des problème de conflit. Vous
 ```bash
 python3 interface.py
 ```
+Le lancement de l'application peut prendre une à deux minutes. Cela dépend des ordinateurs.
 
+# Etat du projet
+Pour ce qui est de ce projet , il nous reste l'auto complétion à faire et le système d'évaluation mais nous avons pu faire tout le reste

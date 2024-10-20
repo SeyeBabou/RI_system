@@ -11,7 +11,7 @@
 
 ## 1. Faire un clone du projet
 ```bash
-git clone <url_du_projet>
+git clone https://github.com/Babou001/RI_system.git
 ```
 ## 2. Installer un environnement
 ```bash
@@ -28,7 +28,7 @@ myenv\Scripts\activate
 ```
 ## 4. Installer les dépendances
 ```bash
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 ## 5. Installer cette version de numpy
 On a décidé de l'installer après vu qu'il pose des problème de conflit. Vous pouvez voir une erreur ou un avertissement mais cela n'empêche pas à l'application de fonctionner normalement

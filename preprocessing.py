@@ -92,16 +92,18 @@ def preprocess_data(directory):
     all_files = get_all_files(directory)
     index2tokens = {}
     index2file = {}
+    index2text = {}
     index = 0
     for file in all_files:
-        print(f"f{file}")
+        print(f"{file}")
         text = extract_text_from_pdf(file)
         tokens = tokenize(text)
         filename = file.split('/')[-1].split('.')[0]
         index2tokens[index] = tokens
         index2file[index] = file
+        index2text[index] = text
         index += 1
-    return index2tokens , index2file 
+    return index2tokens , index2file , index2text
 
 
 
@@ -109,17 +111,19 @@ def preprocess_data(directory):
 
 def create_inverted_index(directory):
     """ Création de l'index inversé """
-    ind2tok , ind2file = preprocess_data(directory)
+    ind2tok , ind2file , ind2text = preprocess_data(directory)
     inverted_index = defaultdict(list)
     for doc_id, words in ind2tok.items():
         #words = text.lower().split()  # Séparer les mots
         for word in set(words):  # Utiliser un set pour éviter les doublons
             inverted_index[word].append(doc_id)
-    return inverted_index , ind2tok , ind2file
+    return inverted_index , ind2tok , ind2file , ind2text
 
 
 
-def save_data(inverted_index, ind2tok, ind2file, prefix):
+
+
+def save_data(inverted_index, ind2tok, ind2file, ind2text, prefix):
     """Enregistrer les données dans des fichiers."""
     with open(f'{prefix}_inverted_index.pkl', 'wb') as f:
         pickle.dump(inverted_index, f)
@@ -127,6 +131,12 @@ def save_data(inverted_index, ind2tok, ind2file, prefix):
         pickle.dump(ind2tok, f)
     with open(f'{prefix}_ind2file.pkl', 'wb') as f:
         pickle.dump(ind2file, f)
+    with open(f'{prefix}_ind2text.pkl', 'wb') as f:
+        pickle.dump(ind2text, f)
+        
+        
+        
+        
 
 def load_data(prefix):
     """Charger les données à partir de fichiers."""
@@ -136,12 +146,14 @@ def load_data(prefix):
         ind2tok = pickle.load(f)
     with open(f'{prefix}_ind2file.pkl', 'rb') as f:
         ind2file = pickle.load(f)
+    with open(f'{prefix}_ind2text.pkl', 'rb') as f:
+        ind2text = pickle.load(f)
     
-    return inverted_index, ind2tok, ind2file
+    return inverted_index, ind2tok, ind2file, ind2text
 
 preprocessed_data_path = str(paths.preprocessed_data)
 
-inverted_index, ind2tok, ind2file = create_inverted_index(paths.data_path)
-save_data(inverted_index, ind2tok, ind2file, f"{preprocessed_data_path}/preprocessed_data")
+inverted_index, ind2tok, ind2file, ind2text = create_inverted_index(paths.data_path)
+save_data(inverted_index, ind2tok, ind2file, ind2text, f"{preprocessed_data_path}/preprocessed_data")
 
 print(f"les données ont été sauvegardés sur le dossier {preprocessed_data_path}")

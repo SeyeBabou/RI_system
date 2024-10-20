@@ -2,16 +2,18 @@ from sentence_transformers import SentenceTransformer, util
 import numpy as np
 
 # Charger le modèle SBERT
-model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+def init():
+    model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
+    return model
 
 # Corpus d'articles (phrases ou documents)
-def encode_corpus(corpus):
+def encode_corpus(corpus , model):
     # Encoder le corpus pour obtenir les embeddings des phrases
     corpus_embeddings = model.encode(corpus, convert_to_tensor=True)
     return corpus_embeddings
 
 # Fonction de recherche sémantique basée sur SBERT
-def semantic_search(query, corpus, corpus_embeddings, top_k=5):
+def semantic_search(query, model, corpus, corpus_embeddings, top_k=56):
     # Encoder la requête
     query_embedding = model.encode(query, convert_to_tensor=True)
     
@@ -28,17 +30,10 @@ def semantic_search(query, corpus, corpus_embeddings, top_k=5):
     top_results = top_results.tolist()
     top_results.reverse()
     
-
-    # Afficher les résultats
-    print(f"Requête : '{query}'")
-    print("\nTop résultats sémantiques :")
-    
+    scores = {}
     for idx in top_results:
-        print(f"Document ID : {idx}, Score : {cosine_scores[idx].item()}")
-        print(f"Contenu : {corpus[idx]}")
-        print()
-    
-    return top_results , cosine_scores
+        scores[idx] = cosine_scores[idx].item()
+    return scores
 
 """# Exemple de recherche
 query = "techniques d'apprentissage profond"

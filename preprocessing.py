@@ -153,7 +153,7 @@ def load_data(prefix):
 
 preprocessed_data_path = str(paths.preprocessed_data)
 
-inverted_index, ind2tok, ind2file, ind2text = create_inverted_index(paths.data_path)
-save_data(inverted_index, ind2tok, ind2file, ind2text, f"{preprocessed_data_path}/preprocessed_data")
+#inverted_index, ind2tok, ind2file, ind2text = create_inverted_index(paths.data_path)
+#save_data(inverted_index, ind2tok, ind2file, ind2text, "preprocessed_data")
 
-print(f"les données ont été sauvegardés sur le dossier {preprocessed_data_path}")
+#print(f"les données ont été sauvegardés sur le dossier {preprocessed_data_path}")

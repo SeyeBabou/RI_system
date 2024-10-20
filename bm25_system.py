@@ -36,4 +36,8 @@ def inference(query, model, index2file, k=56):
     doc_scores = softmax(model.get_scores(tokenized_query))
     doc_indexes = k_argmax(doc_scores)
     files_list = [index2file[index] for index in doc_indexes]
-    return files_list , np.sort(doc_scores)[::-1][:k]
+    doc_scores = np.sort(doc_scores)[::-1][:k]
+    scores_dict = {}
+    for i in range(len(files_list)):
+        scores_dict[doc_indexes[i]] = doc_scores[i]
+    return scores_dict

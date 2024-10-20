@@ -1,84 +1,82 @@
 import os
 import tkinter as tk
 from tkinter import filedialog, messagebox
+import subprocess
+import global_system
+import paths
+from textblob import TextBlob  # Importer TextBlob pour la correction orthographique
 
 
-def search_files(query, directory):
-    """Search for files containing the query in the given directory."""
-    matching_files = []
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            if query.lower() in file.lower():
-                matching_files.append(os.path.join(root, file))
-    return matching_files
 
+inverted_index, ind2tok, ind2file , ind2text = global_system.load_data()
 
-def browse_directory():
-    """Open file dialog to select a directory."""
-    folder_selected = filedialog.askdirectory()
-    if folder_selected:
-        directory_entry.delete(0, tk.END)
-        directory_entry.insert(0, folder_selected)
-
-
-def perform_search():
-    """Search for files based on the user's input."""
+def perform_search(correction=False):
+    """Utilise la fonction get_documents pour afficher les meilleurs résultats."""
     query = search_entry.get()
-    directory = directory_entry.get()
 
-    if not query or not directory:
-        messagebox.showwarning("Input Error", "Please provide both a search query and a directory.")
+    if not query:
+        messagebox.showwarning("Input Error", "Please provide a search query.")
         return
 
-    results = search_files(query, directory)
+    # Correction orthographique avec TextBlob
+    corrected_query = str(TextBlob(query).correct())
+    
+    # Appel à la fonction get_documents pour obtenir les 5 documents les plus pertinents
+    if correction:
+        results = global_system.get_documents(corrected_query, inverted_index, ind2tok, ind2file , ind2text)
+    else:
+        results = global_system.get_documents(query, inverted_index, ind2tok, ind2file , ind2text)
+    
 
     # Clear previous results
     result_listbox.delete(0, tk.END)
 
     if results:
         for result in results:
-            result_listbox.insert(tk.END, result)
+            result_listbox.insert(tk.END, result.split('/')[1])
     else:
-        result_listbox.insert(tk.END, "No files found.")
+        result_listbox.insert(tk.END, "No documents found.")
+
 
 
 def open_file():
-    """Open the selected file."""
-    selected_file = result_listbox.get(tk.ACTIVE)
+    """Ouvre le fichier sélectionné."""
+    selected_file = paths.data_path + "/" + result_listbox.get(tk.ACTIVE)
     if selected_file:
-        os.startfile(selected_file)
+        try:
+            if os.name == 'nt':  # Windows
+                os.startfile(selected_file)
+            elif os.name == 'posix':  # macOS ou Linux
+                if os.uname().sysname == 'Darwin':  # macOS
+                    subprocess.call(['open', selected_file])
+                else:  # Linux
+                    subprocess.call(['xdg-open', selected_file])
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not open the file: {e}")
 
 
-# Create main window
+# Création de la fenêtre principale
 root = tk.Tk()
 root.title("Document Searcher")
 
-# Directory selection
-directory_label = tk.Label(root, text="Directory:")
-directory_label.grid(row=0, column=0, padx=10, pady=10)
-directory_entry = tk.Entry(root, width=50)
-directory_entry.grid(row=0, column=1, padx=10, pady=10)
-browse_button = tk.Button(root, text="Browse", command=browse_directory)
-browse_button.grid(row=0, column=2, padx=10, pady=10)
-
-# Search input
+# Saisie de la requête de recherche
 search_label = tk.Label(root, text="Search Query:")
-search_label.grid(row=1, column=0, padx=10, pady=10)
+search_label.grid(row=0, column=0, padx=10, pady=10)
 search_entry = tk.Entry(root, width=50)
-search_entry.grid(row=1, column=1, padx=10, pady=10)
+search_entry.grid(row=0, column=1, padx=10, pady=10)
 
-# Search button
+# Bouton de recherche
 search_button = tk.Button(root, text="Search", command=perform_search)
-search_button.grid(row=1, column=2, padx=10, pady=10)
+search_button.grid(row=0, column=2, padx=10, pady=10)
 
-# Results listbox
+# Résultats de la recherche
 result_listbox = tk.Listbox(root, width=80, height=20)
-result_listbox.grid(row=2, column=0, columnspan=3, padx=10, pady=10)
+result_listbox.grid(row=1, column=0, columnspan=3, padx=10, pady=10)
 
-# Open file button
+# Bouton pour ouvrir le fichier sélectionné
 open_button = tk.Button(root, text="Open File", command=open_file)
-open_button.grid(row=3, column=0, columnspan=3, padx=10, pady=10)
+open_button.grid(row=2, column=0, columnspan=3, padx=10, pady=10)
 
-# Start the GUI loop
+# Lancement de l'interface
 if __name__ == '__main__':
     root.mainloop()

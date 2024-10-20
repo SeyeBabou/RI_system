@@ -5,7 +5,7 @@ import preprocessing as pr
 
 
 
-vectorizer = TfidfVectorizer()
+vectorizer = TfidfVectorizer(stop_words='english')
 
 def get_matrix(corpus): #56 * nb_terms
     """Fonction pour avoir la matrice qui représente les documents"""
@@ -78,10 +78,10 @@ def boolean_search(query, inverted_index):
 
     return result
 
-def tf_idf(query , X , inverted_index , bool_operator=False ):  # X : 56 * nb_of_term
+def get_scores(query , X , inverted_index , bool_operator=False ):  # X : 56 * nb_of_term
     """Appretissage automatique intelligence artificielle"""
     def get_scores (matrix):
-        print(f"query : {query}")
+        #print(f"query : {query}")
         query_vector = vectorizer.transform([query]).toarray()
         #print(f"le vecteur représentant la requête '{query}' est {query_vector}")
 
@@ -91,7 +91,12 @@ def tf_idf(query , X , inverted_index , bool_operator=False ):  # X : 56 * nb_of
         documents = list(enumerate(similarities))
         documents.sort(key=lambda x: x[1], reverse=True)
         #print(documents)
-        return documents
+        
+        scores = {}
+        for element in documents:
+            index_doc , score = element
+            scores[index_doc] = score
+        return scores
     
     def transform_query(query):
         query_tokens = pr.tokenize(query)

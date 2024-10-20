@@ -11,7 +11,7 @@
 
 ## 1. Faire un clone du projet
 ```bash
-git clone <url_du_projet>
+git clone https://github.com/Babou001/RI_system.git
 ```
 ## 2. Installer un environnement
 ```bash

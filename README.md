@@ -1,8 +1,10 @@
 # Binôme 
  
 **El hadji babou SEYE**
+
 **Nanigna TRAORE**
-**Ketty TOUVOLT**
+
+**Ketty TOUVOLI**
 
 # Processus à suivre
 

@@ -2,9 +2,6 @@
  
 **El hadji babou SEYE**
 
-**Nanigna TRAORE**
-
-**Ketty TOUVOLI**
 
 # Processus à suivre
 

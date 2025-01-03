@@ -9,28 +9,28 @@ def train(tokenized_corpus):
 def inference(query, model, index2file, k=56):
     def softmax(scores):
         """
-        Applique la fonction softmax à un tableau de scores.
+        Applies the softmax function to an array of scores.
 
-        :param scores: Liste ou tableau de scores.
-        :return: Tableau de probabilités résultant de l'application de softmax.
+        :param scores: List or array of scores.
+        :return: Array of probabilities resulting from applying softmax.
         """
-        # Calcul de l'exponentielle des scores en soustrayant le max pour la stabilité numérique
+        # Calculate the exponential of the scores, subtracting the max for numerical stability
         exp_scores = np.exp(scores - np.max(scores))
 
-        # Normalisation pour obtenir des probabilités
+        # Normalize to get probabilities
         return exp_scores / np.sum(exp_scores)
 
     def k_argmax(scores, k=k):
         """
-        Renvoie les indices des k scores les plus élevés dans un tableau.
+        Returns the indices of the top k highest scores in an array.
 
-        :param scores: Liste ou tableau contenant les scores.
-        :param k: Le nombre d'indices à renvoyer (correspondant aux scores les plus élevés).
-        :return: Liste des indices des k scores les plus élevés, triés par ordre décroissant.
+        :param scores: List or array containing the scores.
+        :param k: The number of indices to return (corresponding to the highest scores).
+        :return: List of indices of the top k scores, sorted in descending order.
         """
-        # Utilisation de np.argsort pour obtenir les indices triés
-        indices_tries = np.argsort(scores)[::-1]  # Tri décroissant
-        return indices_tries[:k]
+        # Use np.argsort to get the sorted indices
+        indices_sorted = np.argsort(scores)[::-1]  # Descending sort
+        return indices_sorted[:k]
 
     tokenized_query = pr.tokenize(query)
     doc_scores = softmax(model.get_scores(tokenized_query))

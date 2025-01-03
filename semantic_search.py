@@ -1,32 +1,32 @@
 from sentence_transformers import SentenceTransformer, util
 import numpy as np
 
-# Charger le modèle SBERT
+# Load the SBERT model
 def init():
     model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
     return model
 
-# Corpus d'articles (phrases ou documents)
+# Corpus of articles (sentences or documents)
 def encode_corpus(corpus , model):
-    # Encoder le corpus pour obtenir les embeddings des phrases
+    # Encode the corpus to get the embeddings of the sentences
     corpus_embeddings = model.encode(corpus, convert_to_tensor=True)
     return corpus_embeddings
 
-# Fonction de recherche sémantique basée sur SBERT
+# Semantic search function based on SBERT
 def semantic_search(query, model, corpus, corpus_embeddings, top_k=56):
-    # Encoder la requête
+    # Encode the query
     query_embedding = model.encode(query, convert_to_tensor=True)
     
-    # Calculer la similarité cosinus entre la requête et les documents
+    # Calculate the cosine similarity between the query and the documents
     cosine_scores = util.pytorch_cos_sim(query_embedding, corpus_embeddings)[0]
 
-    # Ajuster top_k si nécessaire
+    # Adjust top_k if necessary
     top_k = min(top_k, len(corpus))
 
-    # Récupérer les indices des documents les plus similaires (top_k)
+    # Get the indices of the most similar documents (top_k)
     top_results = np.argsort(cosine_scores.cpu())[-top_k:]
 
-    # Inverser explicitement pour avoir les scores en ordre décroissant
+    # Explicitly reverse to have the scores in descending order
     top_results = top_results.tolist()
     top_results.reverse()
     
@@ -35,6 +35,6 @@ def semantic_search(query, model, corpus, corpus_embeddings, top_k=56):
         scores[idx] = cosine_scores[idx].item()
     return scores
 
-"""# Exemple de recherche
-query = "techniques d'apprentissage profond"
+"""# Example of search
+query = "deep learning techniques"
 semantic_search(query, corpus, corpus_embeddings)"""

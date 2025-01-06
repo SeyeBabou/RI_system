@@ -42,5 +42,6 @@ def semantic_search(query, model, corpus, corpus_embeddings, top_k=56):
 
  Example of search
 query = "deep learning techniques"
-corpus_embeddings = encode_corpus(corpus, init())
-semantic_search(query, corpus, corpus_embeddings)"""
+model = init()
+corpus_embeddings = encode_corpus(corpus, model)
+semantic_search(query, model, corpus, corpus_embeddings)"""

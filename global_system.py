@@ -101,8 +101,8 @@ def get_documents(query, inverted_index, ind2tok, ind2file , ind2text):
     result = []
     for i in range(5):
         print(f"{i} {ind2file[final_doc[i]]}")
-        result.append(ind2file[final_doc[i]])
-    return result
+        result.append(ind2file[final_doc[i]])  
+    return result 
 
 #query = "Meshless methods have attracted much attention in recent years for a wide range of engineering sciences"
 #inverted_index, ind2tok, ind2file , ind2text = load_data()        

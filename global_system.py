@@ -90,10 +90,9 @@ def get_documents(query, inverted_index, ind2tok, ind2file , ind2text):
     """for index , score in sr_scores.items():
         print(f"score : {score}\tdocument : {ind2file[index]}")"""
 
-    #combiner les résultats pour avoir le classement global :  (0.5 * bm25 + 0.4 * semantic_search + 0.1 * tf_idf)
-    final_doc = combine_scores(tfidf_scores=tf_idf_scores,
-                            bm25_scores=bm25_scores,
-                            embedding_scores=sr_scores)
+    # Combiner les résultats pour avoir le classement global :  (0.6 * bm25 + 0.4 * semantic_search)
+    final_doc = combine_scores(bm25_scores=bm25_scores,
+                               embedding_scores=sr_scores)
 
     #print(final_doc,"\n\n")
     print(f"requête : {query}")

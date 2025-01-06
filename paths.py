@@ -9,6 +9,5 @@ data_path = os.path.join(base_dir, "data")
 #preprocessed data
 preprocessed_data = os.path.join(base_dir, "preprocessed_data")
 
-#print(f"base directory : {base_dir}" )
-#print(f"data path : {data_path}")
-#print(f"preprocessed data : {preprocessed_data}")
+# preprocessed data number 2
+preprocessed_data2 = os.path.join(base_dir, "preprocessed_data2") 

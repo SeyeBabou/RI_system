@@ -1,6 +1,7 @@
 from sentence_transformers import SentenceTransformer, util
 import numpy as np
 
+
 # Load the SBERT model
 def init():
     model = SentenceTransformer('paraphrase-MiniLM-L6-v2')

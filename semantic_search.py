@@ -35,12 +35,12 @@ def semantic_search(query, model, corpus, corpus_embeddings, top_k=56):
         scores[idx] = cosine_scores[idx].item()
     return scores
 
-corpus = ["Deep learning is a subset of machine learning in artificial intelligence (AI) that has networks capable of learning unsupervised from data that is unstructured or unlabeled.",
+"""corpus = ["Deep learning is a subset of machine learning in artificial intelligence (AI) that has networks capable of learning unsupervised from data that is unstructured or unlabeled.",
             "Machine learning (ML) is the study of computer algorithms that improve automatically through experience.",
             "Supervised learning is the machine learning task of learning a function that maps an input to an output based on example input-output pairs.",
             "Unsupervised learning is a type of machine learning that looks for previously undetected patterns in a data set with no pre-existing labels and with a minimum of human supervision."]
 
-# Example of search
+ Example of search
 query = "deep learning techniques"
 corpus_embeddings = encode_corpus(corpus, init())
-semantic_search(query, corpus, corpus_embeddings)
+semantic_search(query, corpus, corpus_embeddings)"""

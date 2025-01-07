@@ -1,7 +1,6 @@
 from rank_bm25 import BM25Plus
 import numpy as np
-import preprocessing as pr
-import test as pr2
+import preprocess as pr
 
 def train(tokenized_corpus):
     bm25 = BM25Plus(tokenized_corpus)
@@ -43,7 +42,7 @@ def inference(query, model, index2file, k=56):
         scores_dict[doc_indexes[i]] = doc_scores[i]
     return scores_dict
 
-chunks, chunk2file, tokens = pr2.load_data(path="preprocessed_data2")
+chunks, chunk2file, tokens = pr.load_data(path="preprocessed_data2")
 tokenized_corpus = tokens
 bm25 = train(tokenized_corpus=tokenized_corpus)
 query = "la methode Bi-Conjugate Gradient Stabilized (BiCGStab)"

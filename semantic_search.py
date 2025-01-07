@@ -1,11 +1,28 @@
 from sentence_transformers import SentenceTransformer, util
 import numpy as np
+import preprocess as pr
+import paths 
 
 
 # Load the SBERT model
 def init():
-    model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
-    return model
+    try:
+        # Specify the path to the model
+        model_path = paths.sbert_model_path
+        
+        # Attempt to load the model from the specified path
+        model = SentenceTransformer(model_path)
+        print(f"Model successfully loaded from {model_path}")
+        return model
+    except FileNotFoundError:
+        # Handle the case where the specified path does not exist
+        print(f"Error: The specified model path ({model_path}) was not found.")
+    except Exception as e:
+        # Handle any other unexpected exceptions
+        print(f"An error occurred while loading the model: {e}")
+    # Return None if an error occurs
+    return None
+
 
 # Corpus of articles (sentences or documents)
 def encode_corpus(corpus , model):
@@ -40,9 +57,18 @@ def semantic_search(query, model, corpus, corpus_embeddings, top_k=56):
             "Machine learning (ML) is the study of computer algorithms that improve automatically through experience.",
             "Supervised learning is the machine learning task of learning a function that maps an input to an output based on example input-output pairs.",
             "Unsupervised learning is a type of machine learning that looks for previously undetected patterns in a data set with no pre-existing labels and with a minimum of human supervision."]
-
- Example of search
-query = "deep learning techniques"
+"""
+#Example of search
+chunks, chunk2file, tokens = pr.load_data(path="preprocessed_data2")
+corpus = chunks
+query = "la methode Bi-Conjugate Gradient Stabilized (BiCGStab)"
 model = init()
 corpus_embeddings = encode_corpus(corpus, model)
-semantic_search(query, model, corpus, corpus_embeddings)"""
+scores = semantic_search(query, model, corpus, corpus_embeddings)
+count = 0
+for doc_id, doc_sc in scores.items():
+    print(f"score : {doc_sc}\tdocument : {chunk2file[doc_id][1]}")
+    print(f"Document content : {chunks[doc_id][:300]}")
+    count += 1
+    if count == 3:
+        break

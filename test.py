@@ -1,4 +1,4 @@
-from markitdown import MarkItDown
+from markitdown import MarkItDown # type: ignore
 import spacy
 import paths
 import os

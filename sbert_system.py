@@ -71,4 +71,4 @@ for doc_id, doc_sc in scores.items():
     print(f"Document content : {chunks[doc_id][:300]}")
     count += 1
     if count == 3:
-        break""""""
+        break"""

@@ -1,96 +1,69 @@
 import paths
-import preprocessing as pr
-import tf_idf
+import preprocess as pr
 import bm25_system
-import semantic_search
+import sbert_system
 
 def combine_scores(bm25_scores, embedding_scores, alpha=0.5, beta=0.5):
     """
-    Combine les scores BM25 et Embeddings avec une pondération et renvoie
-    les documents triés par ordre de pertinence.
+    this function combines the scores of the bm25 and the semantic search
+    :param bm25_scores: the scores of the bm25 model
+    :param embedding_scores: the scores of the semantic search model
+    :param alpha: the weight of the bm25 model
+    :param beta: the weight of the semantic search model
+    :return: the combined scores
 
-    Args:
-    - bm25_scores (dict): Dictionnaire des scores BM25 {index: score}.
-    - embedding_scores (dict): Dictionnaire des scores d'embeddings {index: score}.
-    - alpha (float): Pondération pour BM25.
-    - beta (float): Pondération pour les embeddings sémantiques.
-
-    Returns:
-    - list: Liste des indexes triés par score de pertinence décroissant.
     """
-    # Combine les deux systèmes de notation dans un seul dictionnaire
+    # combine the scores of the bm25 and the semantic search in a dictionary
     combined_scores = {}
 
-    # Fusionner les scores en utilisant les poids alpha et beta
     for doc_id in set(bm25_scores.keys()).union(embedding_scores.keys()):
         bm25_score = bm25_scores.get(doc_id, 0)   # Si l'index est manquant, on suppose un score de 0
         embedding_score = embedding_scores.get(doc_id, 0)
 
-        # Calcul du score combiné
+        # to calculate the combined score
         combined_scores[doc_id] = (alpha * bm25_score) + (beta * embedding_score)
 
-    # Trier les documents par leur score final (du plus grand au plus petit)
+    # to sort the documents by their scores
     sorted_docs = sorted(combined_scores.items(), key=lambda x: x[1], reverse=True)
 
-    # Retourner seulement la liste des indexes, triée par pertinence
+    # return the document ids sorted by their scores
     return [doc_id for doc_id, score in sorted_docs]
 
 
 
-def load_data() :
-    #load data
-    inverted_index, ind2tok, ind2file , ind2text = pr.load_data(f"{paths.preprocessed_data}/preprocessed_data")
-    return inverted_index, ind2tok, ind2file , ind2text
+def initilaize_system():
+    # load data
+    chunks, chunk2file, tokens = pr.load_data(paths.preprocessed_data2)
+
+    # train bm25 model
+    bm25 = bm25_system.train(tokenized_corpus=tokens)
+
+    # load sbert model
+    sbert_model = sbert_system.init()
+    encoded_corpus = sbert_system.encode_corpus(corpus=chunks,
+                                                model=sbert_model)
+    return bm25, sbert_model, encoded_corpus, chunk2file, chunks, tokens
 
 
-def get_documents(query, inverted_index, ind2tok, ind2file , ind2text):
+def get_documents(query,tokens, bm25, sbert_model, encoded_corpus, chunk2file, chunks):
     
-    #corpus (for tf_idf and semantic search)
-    corpus = []
-    for _ , text in ind2text.items():
-        corpus.append(text)
-
-    print("nombre de documents : ", len(corpus))
-
-    #tokenized corpus for bm25 algo
-    tokenized_corpus = []
-    for _ , tokens in ind2tok.items():
-        tokenized_corpus.append(tokens)
-        
-
-    #print("---------> TF-IDF")
-    #tf-idf matrix
-    X = tf_idf.get_matrix(corpus=corpus)
-
     
-    tf_idf_scores = tf_idf.get_scores(query , X , inverted_index)
-    #print(X.shape)
-
-    """for index , score in tf_idf_scores.items():
-        print(f"score : {score}\tdocument : {ind2file[index]}")"""
-        
 
     #print("\n\n\n---------------> BM25")
-    bm25 = bm25_system.train(tokenized_corpus=tokenized_corpus)
-    bm25_scores = bm25_system.inference(query=query, model=bm25, index2file=ind2file)
+    bm25_scores = bm25_system.inference(query=query, 
+                                        model=bm25, 
+                                        index2file=chunk2file)
     """for index , score in bm25_scores.items():
         print(f"score : {score}\tdocument : {ind2file[index]}")"""
         
         
         
     #print("\n\n\n---------------> SEMANTIC SEARCH")  
-    sbert_model = semantic_search.init()
-    encoded_corpus = semantic_search.encode_corpus(corpus=corpus,
-                                                model=sbert_model)
+    sr_scores = sbert_system.semantic_search(query=query, 
+                                            model=sbert_model,
+                                            corpus=chunks,
+                                            corpus_embeddings=encoded_corpus)
 
-    sr_scores = semantic_search.semantic_search(query=query, 
-                                                                model=sbert_model,
-                                                                corpus=corpus,
-                                                                corpus_embeddings=encoded_corpus)
-    """for index , score in sr_scores.items():
-        print(f"score : {score}\tdocument : {ind2file[index]}")"""
-
-    # Combiner les résultats pour avoir le classement global :  (0.6 * bm25 + 0.4 * semantic_search)
     final_doc = combine_scores(bm25_scores=bm25_scores,
                                embedding_scores=sr_scores)
 
@@ -99,10 +72,15 @@ def get_documents(query, inverted_index, ind2tok, ind2file , ind2text):
     print("Les 5 meilleurs documents par ordre de pertinence sont : ")
     result = []
     for i in range(5):
-        print(f"{i} {ind2file[final_doc[i]]}")
-        result.append(ind2file[final_doc[i]])  
+        print(f"{i} {chunk2file[final_doc[i]]}")
+        result.append(chunk2file[final_doc[i]])  
     return result 
 
-#query = "Meshless methods have attracted much attention in recent years for a wide range of engineering sciences"
-#inverted_index, ind2tok, ind2file , ind2text = load_data()        
-#get_documents(query , inverted_index, ind2tok, ind2file , ind2text)
+# test the system (terminal) before doing the interface
+bm25, sbert_model, encoded_corpus, chunk2file, chunks, tokens = initilaize_system()
+while True:
+    query = input("Entrez votre requête : ")
+    if query == "exit":
+        break
+    get_documents(query,tokens, bm25, sbert_model, encoded_corpus, chunk2file, chunks)
+    print("\n\n\n")

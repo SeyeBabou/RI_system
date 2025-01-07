@@ -57,7 +57,7 @@ def semantic_search(query, model, corpus, corpus_embeddings, top_k=56):
             "Machine learning (ML) is the study of computer algorithms that improve automatically through experience.",
             "Supervised learning is the machine learning task of learning a function that maps an input to an output based on example input-output pairs.",
             "Unsupervised learning is a type of machine learning that looks for previously undetected patterns in a data set with no pre-existing labels and with a minimum of human supervision."]
-"""
+
 #Example of search
 chunks, chunk2file, tokens = pr.load_data(path="preprocessed_data2")
 corpus = chunks
@@ -71,4 +71,4 @@ for doc_id, doc_sc in scores.items():
     print(f"Document content : {chunks[doc_id][:300]}")
     count += 1
     if count == 3:
-        break
+        break""""""

@@ -153,23 +153,25 @@ def load_data(path):
     tokens = load_object(os.path.join(path, "tokens"))
     return chunks, chunk2file, tokens
 
-"""# path to the PDF files directory
-directory_path = paths.data_path
 
-# get the chunks from the directory
-print("Getting chunks from directory...")
-chunks, chunk2info = get_chunks_from_directory(directory_path)
+# preprocess the data
+def preprocess(file_directory=paths.data_path):
+    # get the chunks from the directory
+    print("Getting chunks from directory...")
+    chunks, chunk2info = get_chunks_from_directory(directory_path)
 
-# get the tokens from the chunks
-print("Getting tokens from chunks...")
-tokens, chunk2file = get_tokens_from_chunks(chunks, chunk2info)
+    # get the tokens from the chunks
+    print("Getting tokens from chunks...")
+    tokens, chunk2file = get_tokens_from_chunks(chunks, chunk2info)
 
-# verify the path for the preprocessed data
-saved_path = paths.preprocessed_data2
-os.makedirs(saved_path, exist_ok=True)
+    # verify the path for the preprocessed data
+    saved_path = paths.preprocessed_data2
+    os.makedirs(saved_path, exist_ok=True)
 
-# save the data to files
-print(f"Saving data to {saved_path}...")
-save_data(chunks, chunk2file, tokens, saved_path)
+    # save the data to files
+    print(f"Saving data to {saved_path}...")
+    save_data(chunks, chunk2file, tokens, saved_path)
 
-print("Preprocessing completed!")"""
+    print("Preprocessing completed!")
+
+

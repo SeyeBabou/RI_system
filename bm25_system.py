@@ -42,7 +42,7 @@ def inference(query, model, index2file, k=56):
         scores_dict[doc_indexes[i]] = doc_scores[i]
     return scores_dict
 
-chunks, chunk2file, tokens = pr.load_data(path="preprocessed_data2")
+"""chunks, chunk2file, tokens = pr.load_data(path="preprocessed_data2")
 tokenized_corpus = tokens
 bm25 = train(tokenized_corpus=tokenized_corpus)
 query = "la methode Bi-Conjugate Gradient Stabilized (BiCGStab)"
@@ -54,4 +54,4 @@ for index, score in sc_dict.items():
     print(f"Document content : {chunks[index][:300]}")
     count += 1
     if count == 3:
-        break
+        break"""

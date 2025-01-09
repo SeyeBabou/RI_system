@@ -9,9 +9,3 @@ data_path = os.path.join(base_dir, "data")
 
 # preprocessed data number 2
 preprocessed_data2 = os.path.join(base_dir, "preprocessed_data2") 
-
-# SBERT model path
-sbert_model_path = os.path.join(base_dir, "models\paraphrase-MiniLM-L6-v2")
-
-#llama model path
-llama_model_path = os.path.join(base_dir, "models\llama-3.2-1B")

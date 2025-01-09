@@ -8,15 +8,15 @@ import paths
 def init():
     try:
         # Specify the path to the model
-        model_path = paths.sbert_model_path
+        model_name = "paraphrase-MiniLM-L6-v2"
         
         # Attempt to load the model from the specified path
-        model = SentenceTransformer(model_path)
-        print(f"Model successfully loaded from {model_path}")
+        model = SentenceTransformer(model_name)
+        print(f"Model successfully loaded from {model_name}")
         return model
     except FileNotFoundError:
         # Handle the case where the specified path does not exist
-        print(f"Error: The specified model path ({model_path}) was not found.")
+        print(f"Error: The specified model path ({model_name}) was not found.")
     except Exception as e:
         # Handle any other unexpected exceptions
         print(f"An error occurred while loading the model: {e}")
